@@ -40,7 +40,12 @@ describe Oystercard do
     it { is_expected.to respond_to("touch_in") }
 
     it "should change in_journey from false to true" do
+      subject.top_up(Oystercard::MAXIMUM_BALANCE)
       expect { subject.touch_in }.to change { subject.in_journey? }.from(false).to(true)
+    end
+
+    it "should raise an error if balance is less than minimum fare" do
+      expect { subject.touch_in }.to raise_error "Insufficient funds"
     end
   end
 
@@ -48,6 +53,7 @@ describe Oystercard do
     it { is_expected.to respond_to("touch_out") }
 
     it "should change in_journey from true to false" do
+      subject.top_up(Oystercard::MAXIMUM_BALANCE)
       subject.touch_in
       expect { subject.touch_out }.to change { subject.in_journey? }.from(true).to(false)
     end

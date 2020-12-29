@@ -1,12 +1,15 @@
 describe "User Story:" do
-  let(:card) { Oystercard.new }
   describe "1. In order to use public transport" do
+    include_context "Card Empty"
+
     it "I want money on my card" do
       expect(card.balance).to eq 0
     end
   end
 
   describe "2. In order to keep using public transport" do
+    include_context "Card Empty"
+
     it "I want to add money to my card" do
       expect { card.top_up(5) }.to change { card.balance }.by(5)
     end
@@ -34,6 +37,14 @@ describe "User Story:" do
     it "I need to touch in and out" do
       expect { card.touch_in }.to change { card.in_journey? }.from(false).to(true)
       expect { card.touch_out }.to change { card.in_journey? }.from(true).to(false)
+    end
+  end
+
+  describe "6. In order to pay for my journey" do
+    include_context "Card Empty"
+
+    it "I need to have the minimum amount (£1) for a single journey" do
+      expect { card.touch_in }.to raise_error "Insufficient funds"
     end
   end
 end

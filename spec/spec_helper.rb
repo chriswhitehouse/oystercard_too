@@ -110,7 +110,13 @@ RSpec.configure do |config|
 end
 
 RSpec.shared_context "Card Topped Up", :shared_context => :metadata do
+  let(:card) { Oystercard.new }
+
   before :each do
     card.top_up(Oystercard::MAXIMUM_BALANCE)
   end
+end
+
+RSpec.shared_context "Card Empty", :shared_context => :metadata do
+  let(:card) { Oystercard.new }
 end
