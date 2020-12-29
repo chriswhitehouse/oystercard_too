@@ -24,6 +24,10 @@ As a customer
 I want money on my card
 ```
 
+|Objects |Messages |
+|---|---|
+|Card | add_money |
+
 ### User Story 2
 ```
 In order to keep using public transport
