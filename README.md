@@ -68,6 +68,10 @@ As a customer
 I need to touch in and out
 ```
 
+|Objects |Messages |
+|---|---|
+|Card | touch_in, touch_out, in_journey? |
+
 ### User Story 6
 ```
 In order to pay for my journey

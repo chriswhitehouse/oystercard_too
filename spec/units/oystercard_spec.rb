@@ -27,4 +27,29 @@ describe Oystercard do
       expect { subject.deduct(5) }.to change { subject.balance }.by(-5)
     end
   end
+
+  describe "#in_journey?" do
+    it { is_expected.to respond_to("in_journey?") }
+
+    it "should be false before touch in" do
+      expect(subject).not_to be_in_journey
+    end
+  end
+
+  describe "#touch_in" do
+    it { is_expected.to respond_to("touch_in") }
+
+    it "should change in_journey from false to true" do
+      expect { subject.touch_in }.to change { subject.in_journey? }.from(false).to(true)
+    end
+  end
+
+  describe "#touch_out" do
+    it { is_expected.to respond_to("touch_out") }
+
+    it "should change in_journey from true to false" do
+      subject.touch_in
+      expect { subject.touch_out }.to change { subject.in_journey? }.from(true).to(false)
+    end
+  end
 end

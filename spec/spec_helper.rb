@@ -108,3 +108,9 @@ RSpec.configure do |config|
   #   # as the one that triggered the failure.
   #   Kernel.srand config.seed
 end
+
+RSpec.shared_context "Card Topped Up", :shared_context => :metadata do
+  before :each do
+    card.top_up(Oystercard::MAXIMUM_BALANCE)
+  end
+end
