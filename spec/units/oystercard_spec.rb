@@ -1,6 +1,7 @@
 describe Oystercard do
   let(:entry_station) { double :station, name: "Waterloo" }
   let(:exit_station) { double :station, name: "City" }
+  let(:part_journey) { {:entry_station => entry_station, :exit_station => nil} }
   let(:journey) { {:entry_station => entry_station, :exit_station => exit_station} }
 
   describe "#balance" do
@@ -53,7 +54,8 @@ describe Oystercard do
     end
 
     it "should record the entry station" do
-      expect { card.touch_in(entry_station) }.to change { card.entry_station }.from(nil).to(entry_station)
+      card.touch_in(entry_station)
+      expect(card.journeys).to include part_journey
     end
   end
 
@@ -74,7 +76,8 @@ describe Oystercard do
 
     it "records entry station as nil" do
       card.touch_in(entry_station)
-      expect { card.touch_out(exit_station) }.to change { card.entry_station }.from(entry_station).to(nil)
+      card.touch_out(exit_station)
+      expect(card.journeys).to include journey
     end
   end
 

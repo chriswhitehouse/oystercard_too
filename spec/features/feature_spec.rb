@@ -1,6 +1,7 @@
 describe "User Story:" do
   let(:entry_station) { double :station, name: "Waterloo" }
   let(:exit_station) { double :station, name: "City" }
+  let(:part_journey) { {:entry_station => entry_station, :exit_station => nil} }
   let(:journey) { {:entry_station => entry_station, :exit_station => exit_station} }
 
   describe "1. In order to use public transport" do
@@ -66,7 +67,8 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need to know where I've travelled from" do
-      expect { card.touch_in(entry_station) }.to change { card.entry_station }.from(nil).to(entry_station)
+      card.touch_in(entry_station)
+      expect(card.journeys).to include part_journey
     end
   end
 
