@@ -1,4 +1,6 @@
 describe "User Story:" do
+  let(:station) { double :station, name: "Waterloo" }
+
   describe "1. In order to use public transport" do
     include_context "Card Empty"
 
@@ -35,7 +37,7 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need to touch in and out" do
-      expect { card.touch_in }.to change { card.in_journey? }.from(false).to(true)
+      expect { card.touch_in(station) }.to change { card.in_journey? }.from(false).to(true)
       expect { card.touch_out }.to change { card.in_journey? }.from(true).to(false)
     end
   end
@@ -44,7 +46,7 @@ describe "User Story:" do
     include_context "Card Empty"
 
     it "I need to have the minimum amount (£1) for a single journey" do
-      expect { card.touch_in }.to raise_error "Insufficient funds"
+      expect { card.touch_in(station) }.to raise_error "Insufficient funds"
     end
   end
 
@@ -52,8 +54,16 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need to pay for my journey when it's complete" do
-      card.touch_in
+      card.touch_in(station)
       expect { card.touch_out }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
+    end
+  end
+
+  describe "8. In order to pay for my journey" do
+    include_context "Card Topped Up"
+
+    it "I need to know where I've travelled from" do
+      expect { card.touch_in(station) }.to change { card.entry_station }.from(nil).to(station)
     end
   end
 end

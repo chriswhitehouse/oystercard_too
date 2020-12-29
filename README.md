@@ -101,6 +101,10 @@ As a customer
 I need to know where I've travelled from
 ```
 
+|Objects |Messages |
+|---|---|
+|Card | touch_in(entry_station), entry_station |
+
 ### User Story 9
 ```
 In order to know where I have been

@@ -1,4 +1,6 @@
 describe Oystercard do
+  let(:station) { double :station, name: "Waterloo" }
+
   describe "#balance" do
     include_context "Card Empty"
 
@@ -27,7 +29,7 @@ describe Oystercard do
   describe "#in_journey?" do
     include_context "Card Empty"
 
-    it { is_expected.to respond_to("in_journey?") }
+    it { is_expected.to respond_to(:in_journey?) }
 
     it "should be false before touch in" do
       expect(card).not_to be_in_journey
@@ -37,31 +39,46 @@ describe Oystercard do
   describe "#touch_in" do
     include_context "Card Topped Up"
 
-    it { is_expected.to respond_to("touch_in") }
+    it { is_expected.to respond_to(:touch_in).with(1).argument }
 
     it "should change in_journey from false to true" do
-      expect { card.touch_in }.to change { card.in_journey? }.from(false).to(true)
+      expect { card.touch_in(station) }.to change { card.in_journey? }.from(false).to(true)
     end
 
     it "should raise an error if balance is less than minimum fare" do
       card = Oystercard.new
-      expect { card.touch_in }.to raise_error "Insufficient funds"
+      expect { card.touch_in(station) }.to raise_error "Insufficient funds"
+    end
+
+    it "should record the entry station" do
+      expect { card.touch_in(station) }.to change { card.entry_station }.from(nil).to(station)
     end
   end
 
   describe "#touch_out" do
     include_context "Card Topped Up"
 
-    it { is_expected.to respond_to("touch_out") }
+    it { is_expected.to respond_to(:touch_out) }
 
     it "should change in_journey from true to false" do
-      card.touch_in
+      card.touch_in(station)
       expect { card.touch_out }.to change { card.in_journey? }.from(true).to(false)
     end
 
     it "reduce balance by fare amount" do
-      card.touch_in
+      card.touch_in(station)
       expect { card.touch_out }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
     end
+
+    it "records entry station as nil" do
+      card.touch_in(station)
+      expect { card.touch_out }.to change { card.entry_station }.from(station).to(nil)
+    end
+  end
+
+  describe "#station" do
+    include_context "Card Empty"
+
+    it { is_expected.to respond_to(:entry_station) }
   end
 end
