@@ -46,6 +46,10 @@ As a customer
 I don't want to put too much money on my card
 ```
 
+|Objects |Messages |
+|---|---|
+|Card | limit |
+
 ### User Story 4
 ```
 In order to pay for my journey
