@@ -1,5 +1,7 @@
 describe Oystercard do
-  let(:station) { double :station, name: "Waterloo" }
+  let(:entry_station) { double :station, name: "Waterloo" }
+  let(:exit_station) { double :station, name: "City" }
+  let(:journey) { {:entry_station => entry_station, :exit_station => exit_station} }
 
   describe "#balance" do
     include_context "Card Empty"
@@ -42,37 +44,37 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_in).with(1).argument }
 
     it "should change in_journey from false to true" do
-      expect { card.touch_in(station) }.to change { card.in_journey? }.from(false).to(true)
+      expect { card.touch_in(entry_station) }.to change { card.in_journey? }.from(false).to(true)
     end
 
     it "should raise an error if balance is less than minimum fare" do
       card = Oystercard.new
-      expect { card.touch_in(station) }.to raise_error "Insufficient funds"
+      expect { card.touch_in(entry_station) }.to raise_error "Insufficient funds"
     end
 
     it "should record the entry station" do
-      expect { card.touch_in(station) }.to change { card.entry_station }.from(nil).to(station)
+      expect { card.touch_in(entry_station) }.to change { card.entry_station }.from(nil).to(entry_station)
     end
   end
 
   describe "#touch_out" do
     include_context "Card Topped Up"
 
-    it { is_expected.to respond_to(:touch_out) }
+    it { is_expected.to respond_to(:touch_out).with(1).argument }
 
     it "should change in_journey from true to false" do
-      card.touch_in(station)
-      expect { card.touch_out }.to change { card.in_journey? }.from(true).to(false)
+      card.touch_in(entry_station)
+      expect { card.touch_out(exit_station) }.to change { card.in_journey? }.from(true).to(false)
     end
 
     it "reduce balance by fare amount" do
-      card.touch_in(station)
-      expect { card.touch_out }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
+      card.touch_in(entry_station)
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
     end
 
     it "records entry station as nil" do
-      card.touch_in(station)
-      expect { card.touch_out }.to change { card.entry_station }.from(station).to(nil)
+      card.touch_in(entry_station)
+      expect { card.touch_out(exit_station) }.to change { card.entry_station }.from(entry_station).to(nil)
     end
   end
 
@@ -81,4 +83,21 @@ describe Oystercard do
 
     it { is_expected.to respond_to(:entry_station) }
   end
+
+  describe "#journeys" do
+    include_context "Card Topped Up"
+
+    it { is_expected.to respond_to(:journeys) }
+
+    it "should be empty by default" do
+      expect(card.journeys).to be_empty
+    end
+
+    it "should record a collection of entry and exit station pairs" do
+      card.touch_in(entry_station)
+      card.touch_out(exit_station)
+      expect(card.journeys).to include journey
+    end
+  end
+
 end

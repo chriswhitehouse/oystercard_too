@@ -1,5 +1,7 @@
 describe "User Story:" do
-  let(:station) { double :station, name: "Waterloo" }
+  let(:entry_station) { double :station, name: "Waterloo" }
+  let(:exit_station) { double :station, name: "City" }
+  let(:journey) { {:entry_station => entry_station, :exit_station => exit_station} }
 
   describe "1. In order to use public transport" do
     include_context "Card Empty"
@@ -29,7 +31,8 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need my fare deducted from my card" do
-      expect { card.touch_out }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
+      card.touch_in(entry_station)
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
     end
   end
 
@@ -37,8 +40,8 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need to touch in and out" do
-      expect { card.touch_in(station) }.to change { card.in_journey? }.from(false).to(true)
-      expect { card.touch_out }.to change { card.in_journey? }.from(true).to(false)
+      expect { card.touch_in(entry_station) }.to change { card.in_journey? }.from(false).to(true)
+      expect { card.touch_out(exit_station) }.to change { card.in_journey? }.from(true).to(false)
     end
   end
 
@@ -46,7 +49,7 @@ describe "User Story:" do
     include_context "Card Empty"
 
     it "I need to have the minimum amount (£1) for a single journey" do
-      expect { card.touch_in(station) }.to raise_error "Insufficient funds"
+      expect { card.touch_in(entry_station) }.to raise_error "Insufficient funds"
     end
   end
 
@@ -54,8 +57,8 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need to pay for my journey when it's complete" do
-      card.touch_in(station)
-      expect { card.touch_out }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
+      card.touch_in(entry_station)
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
     end
   end
 
@@ -63,7 +66,17 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need to know where I've travelled from" do
-      expect { card.touch_in(station) }.to change { card.entry_station }.from(nil).to(station)
+      expect { card.touch_in(entry_station) }.to change { card.entry_station }.from(nil).to(entry_station)
+    end
+  end
+
+  describe "9. In order to know where I have been" do
+    include_context "Card Topped Up"
+
+    it "I want to see to all my previous trips" do
+      card.touch_in(entry_station)
+      card.touch_out(exit_station)
+      expect(card.journeys).to include journey
     end
   end
 end

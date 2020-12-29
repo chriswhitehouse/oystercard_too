@@ -112,6 +112,10 @@ As a customer
 I want to see to all my previous trips
 ```
 
+|Objects |Messages |
+|---|---|
+|Card | touch_out(exit_station), exit_station, journeys |
+
 ### User Story 10
 ```
 In order to know how far I have travelled
