@@ -14,7 +14,7 @@ This is a second go at the challenge. Trying to reinforce prior learning.
 Include logo/demo screenshot etc.
 
 ## Tech/framework used
-Ruby with Rspec for testing.
+Ruby 2.7.1 with Rspec for testing.
 
 ## Features
 ### User Story 1
