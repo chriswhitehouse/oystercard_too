@@ -35,6 +35,10 @@ As a customer
 I want to add money to my card
 ```
 
+|Objects |Messages |
+|---|---|
+|Card | add_money |
+
 ### User Story 3
 ```
 In order to protect my money
