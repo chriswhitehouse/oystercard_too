@@ -18,4 +18,11 @@ describe "User Story:" do
       expect { card.top_up(1) }.to raise_error("Maximum balance of £#{Oystercard::MAXIMUM_BALANCE} exceeded")
     end
   end
+
+  describe "4. In order to pay for my journey" do
+    it "I need my fare deducted from my card" do
+      card.top_up(Oystercard::MAXIMUM_BALANCE)
+      expect { card.deduct(5) }.to change { card.balance }.by(-5)
+    end
+  end
 end

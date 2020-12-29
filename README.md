@@ -48,7 +48,7 @@ I don't want to put too much money on my card
 
 |Objects |Messages |
 |---|---|
-|Card | limit |
+|Card | MAXIMUM_BALANCE |
 
 ### User Story 4
 ```
@@ -56,6 +56,10 @@ In order to pay for my journey
 As a customer
 I need my fare deducted from my card
 ```
+
+|Objects |Messages |
+|---|---|
+|Card | deduct_fare |
 
 ### User Story 5
 ```
