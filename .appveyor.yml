@@ -3,4 +3,5 @@ build:
   verbosity: minimal
 
 build_script:
-    - bundle exec rspec
+    - bundle install
+    - exec rspec
