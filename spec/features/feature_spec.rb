@@ -81,4 +81,12 @@ describe "User Story:" do
       expect(card.journeys).to include journey
     end
   end
+
+  describe "10. In order to know how far I have travelled" do
+    it "I want to know what zone a station is in" do
+      station = Station.new(name: "Waterloo", zone: 1)
+      expect(station.name).to eq "Waterloo"
+      expect(station.zone).to eq 1
+    end
+  end
 end
