@@ -90,6 +90,10 @@ As a customer
 I need to pay for my journey when it's complete
 ```
 
+|Objects |Messages |
+|---|---|
+|Card | deduct(), touch_out |
+
 ### User Story 8
 ```
 In order to pay for my journey

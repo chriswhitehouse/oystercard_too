@@ -27,7 +27,7 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need my fare deducted from my card" do
-      expect { card.deduct(5) }.to change { card.balance }.by(-5)
+      expect { card.touch_out }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
     end
   end
 
@@ -45,6 +45,15 @@ describe "User Story:" do
 
     it "I need to have the minimum amount (£1) for a single journey" do
       expect { card.touch_in }.to raise_error "Insufficient funds"
+    end
+  end
+
+  describe "7. In order to pay for my journey" do
+    include_context "Card Topped Up"
+
+    it "I need to pay for my journey when it's complete" do
+      card.touch_in
+      expect { card.touch_out }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
     end
   end
 end
