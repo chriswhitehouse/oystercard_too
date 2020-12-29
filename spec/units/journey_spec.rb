@@ -1,0 +1,3 @@
+describe Journey do
+
+end

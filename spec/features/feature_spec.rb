@@ -89,4 +89,17 @@ describe "User Story:" do
       expect(station.zone).to eq 1
     end
   end
+
+  describe "11. In order to be charged correctly" do
+    include_context "Card Topped Up"
+
+    it "I need a penalty charge deducted if I fail to touch in" do
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::PENALTY_CHARGE)
+    end
+
+    it "I need a penalty charge deducted if I fail to touch out" do
+      card.touch_in(entry_station)
+      expect { card.touch_in(entry_station) }.to change { card.balance }.by(-Oystercard::PENALTY_CHARGE)
+    end
+  end
 end

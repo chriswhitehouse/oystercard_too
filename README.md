@@ -133,6 +133,10 @@ As a customer
 I need a penalty charge deducted if I fail to touch in or out
 ```
 
+|Objects |Messages |
+|---|---|
+|Card | incomplete_journey?, PENALTY_CHARGE |
+
 ### User Story 12
 ```
 In order to be charged the correct amount

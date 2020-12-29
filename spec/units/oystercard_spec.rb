@@ -30,12 +30,17 @@ describe Oystercard do
   end
 
   describe "#in_journey?" do
-    include_context "Card Empty"
+    include_context "Card Topped Up"
 
     it { is_expected.to respond_to(:in_journey?) }
 
     it "should be false before touch in" do
       expect(card).not_to be_in_journey
+    end
+
+    it "should be true after touch in" do
+      card.touch_in(entry_station)
+      expect(card).to be_in_journey
     end
   end
 
@@ -56,6 +61,11 @@ describe Oystercard do
     it "should record the entry station" do
       card.touch_in(entry_station)
       expect(card.journeys).to include part_journey
+    end
+
+    it "should deduct a penalty charge if no prior exit station" do
+      card.touch_in(entry_station)
+      expect { card.touch_in(entry_station) }.to change { card.balance }.by(-Oystercard::PENALTY_CHARGE)
     end
   end
 
@@ -79,12 +89,10 @@ describe Oystercard do
       card.touch_out(exit_station)
       expect(card.journeys).to include journey
     end
-  end
 
-  describe "#station" do
-    include_context "Card Empty"
-
-    it { is_expected.to respond_to(:entry_station) }
+    it "deducts a penalty charge if no prior entry station" do
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::PENALTY_CHARGE)
+    end
   end
 
   describe "#journeys" do
@@ -102,5 +110,4 @@ describe Oystercard do
       expect(card.journeys).to include journey
     end
   end
-
 end
