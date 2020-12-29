@@ -26,7 +26,7 @@ I want money on my card
 
 |Objects |Messages |
 |---|---|
-|Card | add_money |
+|Card | balance |
 
 ### User Story 2
 ```
