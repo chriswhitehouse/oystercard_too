@@ -25,17 +25,23 @@ describe Journey do
     end
 
     context 'given an exit station' do
-      let(:other_station) { double :other_station }
+      let(:other_station) { double :station, zone: 1 }
+      let(:z2_station) { double :station, zone: 2 }
+      let(:z3_station) { double :station, zone: 3 }
+      let(:z4_station) { double :station, zone: 4 }
 
-      before do
+      it 'calculates a fare for z1 to z1' do
         subject.finish(other_station)
-      end
-
-      it 'calculates a fare' do
         expect(subject.fare).to eq 1
       end
 
+      it 'calculates a fare for z1 to z2' do
+        subject.finish(z2_station)
+        expect(subject.fare).to eq 2
+      end
+
       it "knows if a journey is complete" do
+        subject.finish(other_station)
         expect(subject).to be_complete
       end
     end

@@ -1,6 +1,9 @@
 describe "User Story:" do
   let(:entry_station) { Station.new(name: "Waterloo", zone: 1) }
   let(:exit_station) { Station.new(name: "City", zone: 1) }
+  let(:z2_station) { Station.new(name: "Kennington", zone: 2) }
+  let(:z3_station) { Station.new(name: "Balham", zone: 3) }
+  let(:z4_station) { Station.new(name: "Morden", zone: 4) }
   let(:journey) { Journey.new(entry_station) }
   let(:card) { Oystercard.new }
 
@@ -109,6 +112,32 @@ describe "User Story:" do
     it "I need a penalty charge deducted if I fail to touch out" do
       card.touch_in(entry_station)
       expect { card.touch_in(entry_station) }.to change { card.balance }.by(-Journey::PENALTY_FARE)
+    end
+  end
+
+  describe "12. In order to be charged the correct amount" do
+    before do
+      card.top_up(Oystercard::MAXIMUM_BALANCE)
+    end
+
+    it "I need to have the correct fare calculated for z1 to z1" do
+      card.touch_in(entry_station)
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-1)
+    end
+
+    it "I need to have the correct fare calculated for z1 to z2" do
+      card.touch_in(entry_station)
+      expect { card.touch_out(z2_station) }.to change { card.balance }.by(-2)
+    end
+
+    it "I need to have the correct fare calculated for z1 to z3" do
+      card.touch_in(entry_station)
+      expect { card.touch_out(z3_station) }.to change { card.balance }.by(-3)
+    end
+
+    it "I need to have the correct fare calculated for z1 to z4" do
+      card.touch_in(entry_station)
+      expect { card.touch_out(z4_station) }.to change { card.balance }.by(-4)
     end
   end
 end

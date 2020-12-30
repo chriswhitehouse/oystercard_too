@@ -16,7 +16,7 @@ class Journey
 
   def fare
     if complete?
-      MINIMUM_FARE
+      MINIMUM_FARE + (@entry_station.zone - @exit_station.zone).abs
     else
       PENALTY_FARE
     end
