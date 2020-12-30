@@ -129,5 +129,14 @@ RSpec.shared_context "Card Topped Up", shared_context: :metadata do
 end
 
 RSpec.shared_context "Card Empty", shared_context: :metadata do
-  let(:card) { Oystercard.new }
+  let(:entry_station_double) { double :station, name: "Waterloo", zone: 1 }
+  let(:exit_station_double) { double :station, name: "City", zone: 1 }
+  let(:journey_double) {
+    double :journey,
+    entry_station: entry_station_double,
+    exit_station: exit_station_double,
+    start: true,
+    finish: true }
+  let(:journey_class_double) { double :journey_class, new: journey_double }
+  let(:card) { Oystercard.new(journey_class_double) }
 end
