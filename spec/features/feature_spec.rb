@@ -1,8 +1,8 @@
 describe "User Story:" do
   let(:entry_station) { double :station, name: "Waterloo" }
   let(:exit_station) { double :station, name: "City" }
-  let(:part_journey) { {:entry_station => entry_station, :exit_station => nil} }
-  let(:journey) { {:entry_station => entry_station, :exit_station => exit_station} }
+  let(:part_journey) { {entry_station: entry_station, exit_station: nil} }
+  let(:journey_double) { double :journey, entry_station: entry_station, exit_station: exit_station }
 
   describe "1. In order to use public transport" do
     include_context "Card Empty"
@@ -32,8 +32,10 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need my fare deducted from my card" do
+      stub_const("Journey::MINIMUM_CHARGE", 1)
+      allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       card.touch_in(entry_station)
-      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Journey::MINIMUM_CHARGE)
     end
   end
 
@@ -41,6 +43,8 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need to touch in and out" do
+      stub_const("Journey::MINIMUM_CHARGE", 1)
+      allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       expect { card.touch_in(entry_station) }.to change { card.in_journey? }.from(false).to(true)
       expect { card.touch_out(exit_station) }.to change { card.in_journey? }.from(true).to(false)
     end
@@ -58,8 +62,10 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need to pay for my journey when it's complete" do
+      stub_const("Journey::MINIMUM_CHARGE", 1)
+      allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       card.touch_in(entry_station)
-      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Journey::MINIMUM_CHARGE)
     end
   end
 
@@ -68,7 +74,7 @@ describe "User Story:" do
 
     it "I need to know where I've travelled from" do
       card.touch_in(entry_station)
-      expect(card.journeys).to include part_journey
+      expect(card.journey.entry_station).to eq entry_station_double
     end
   end
 
@@ -76,9 +82,11 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I want to see to all my previous trips" do
+      stub_const("Journey::MINIMUM_CHARGE", 1)
+      allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       card.touch_in(entry_station)
       card.touch_out(exit_station)
-      expect(card.journeys).to include journey
+      expect(card.journeys).to include journey_double
     end
   end
 
@@ -94,12 +102,16 @@ describe "User Story:" do
     include_context "Card Topped Up"
 
     it "I need a penalty charge deducted if I fail to touch in" do
-      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::PENALTY_CHARGE)
+      stub_const("Journey::PENALTY_CHARGE", 6)
+      allow(journey_double).to receive(:fare).and_return(Journey::PENALTY_CHARGE)
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Journey::PENALTY_CHARGE)
     end
 
     it "I need a penalty charge deducted if I fail to touch out" do
+      stub_const("Journey::PENALTY_CHARGE", 6)
+      allow(journey_double).to receive(:fare).and_return(Journey::PENALTY_CHARGE)
       card.touch_in(entry_station)
-      expect { card.touch_in(entry_station) }.to change { card.balance }.by(-Oystercard::PENALTY_CHARGE)
+      expect { card.touch_in(entry_station) }.to change { card.balance }.by(-Journey::PENALTY_CHARGE)
     end
   end
 end

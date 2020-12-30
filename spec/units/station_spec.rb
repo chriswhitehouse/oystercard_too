@@ -1,5 +1,5 @@
 describe Station do
-  let(:station) { Station.new(name: "Waterloo", zone:  1) }
+  let(:station) { Station.new(name: "Waterloo", zone: 1) }
 
   describe "#name" do
     it "should return the name of the station" do

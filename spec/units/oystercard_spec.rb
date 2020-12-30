@@ -1,8 +1,8 @@
 describe Oystercard do
   let(:entry_station) { double :station, name: "Waterloo" }
   let(:exit_station) { double :station, name: "City" }
-  let(:part_journey) { {:entry_station => entry_station, :exit_station => nil} }
-  let(:journey) { {:entry_station => entry_station, :exit_station => exit_station} }
+  let(:part_journey) { {entry_station: entry_station, exit_station: nil} }
+  let(:journey) { {entry_station: entry_station, exit_station: exit_station} }
 
   describe "#balance" do
     include_context "Card Empty"
@@ -60,12 +60,14 @@ describe Oystercard do
 
     it "should record the entry station" do
       card.touch_in(entry_station)
-      expect(card.journeys).to include part_journey
+      expect(card.journey.entry_station).to eq entry_station_double
     end
 
     it "should deduct a penalty charge if no prior exit station" do
+      stub_const("Journey::PENALTY_CHARGE", 6)
+      allow(journey_double).to receive(:fare).and_return(Journey::PENALTY_CHARGE)
       card.touch_in(entry_station)
-      expect { card.touch_in(entry_station) }.to change { card.balance }.by(-Oystercard::PENALTY_CHARGE)
+      expect { card.touch_in(entry_station) }.to change { card.balance }.by(-Journey::PENALTY_CHARGE)
     end
   end
 
@@ -75,23 +77,30 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_out).with(1).argument }
 
     it "should change in_journey from true to false" do
+      allow(journey_double).to receive(:fare).and_return(1)
       card.touch_in(entry_station)
       expect { card.touch_out(exit_station) }.to change { card.in_journey? }.from(true).to(false)
     end
 
     it "reduce balance by fare amount" do
+      stub_const("Journey::MINIMUM_CHARGE", 1)
+      allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       card.touch_in(entry_station)
-      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::MINIMUM_CHARGE)
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Journey::MINIMUM_CHARGE)
     end
 
     it "records entry station as nil" do
-      card.touch_in(entry_station)
+      allow(journey_double).to receive(:fare).and_return(6)
+      allow(journey_double).to receive(:entry_station).and_return(nil)
       card.touch_out(exit_station)
-      expect(card.journeys).to include journey
+      card.touch_out(exit_station)
+      expect(card.journeys.last.entry_station).to eq nil
     end
 
     it "deducts a penalty charge if no prior entry station" do
-      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Oystercard::PENALTY_CHARGE)
+      stub_const("Journey::PENALTY_CHARGE", 6)
+      allow(journey_double).to receive(:fare).and_return(Journey::PENALTY_CHARGE)
+      expect { card.touch_out(exit_station) }.to change { card.balance }.by(-Journey::PENALTY_CHARGE)
     end
   end
 
@@ -105,9 +114,11 @@ describe Oystercard do
     end
 
     it "should record a collection of entry and exit station pairs" do
+      stub_const("Journey::MINIMUM_CHARGE", 1)
+      allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       card.touch_in(entry_station)
       card.touch_out(exit_station)
-      expect(card.journeys).to include journey
+      expect(card.journeys).to include journey_double
     end
   end
 end
