@@ -121,8 +121,9 @@ RSpec.shared_context "Card Topped Up", shared_context: :metadata do
     exit_station: exit_station_double,
     start: true,
     finish: true }
-  let(:journey_class_double) { double :journey_class, new: journey_double }
-  let(:card) { Oystercard.new(journey_class_double) }
+  let(:journey_log_double) { double :journey_log, start: true, finish: true, journeys: [journey_double]}
+  let(:journey_log_class_double) { double :journey_log_class, new: journey_log_double }
+  let(:card) { Oystercard.new(journey_log_class_double) }
 
   before :each do
     card.top_up(Oystercard::MAXIMUM_BALANCE)
@@ -138,6 +139,7 @@ RSpec.shared_context "Card Empty", shared_context: :metadata do
     exit_station: exit_station_double,
     start: true,
     finish: true }
-  let(:journey_class_double) { double :journey_class, new: journey_double }
-  let(:card) { Oystercard.new(journey_class_double) }
+  let(:journey_log_double) { double :journey_log, start: true, finish: true, journeys: [journey_double]}
+  let(:journey_log_class_double) { double :journey_log_class, new: journey_log_double }
+  let(:card) { Oystercard.new(journey_log_class_double) }
 end

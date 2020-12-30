@@ -23,6 +23,7 @@ describe JourneyLog do
 
   describe "#finish" do
     it "should end a journey with an exit station" do
+      allow(journey_double).to receive(:complete?).and_return(false)
       journey_log.start(entry_station_double)
       expect( journey_log.finish(exit_station_double) ).to eq nil
     end
@@ -30,9 +31,9 @@ describe JourneyLog do
 
   describe "#journeys" do
     it "should return a list of all previous journeys" do
+      allow(journey_double).to receive(:complete?).and_return(true)
       journey_log.start(entry_station_double)
       journey_log.finish(exit_station_double)
-      p journey_log.journeys
       expect(journey_log.journeys).to include journey_double
     end
   end

@@ -72,7 +72,7 @@ describe "User Story:" do
 
     it "I need to know where I've travelled from" do
       card.touch_in(entry_station)
-      expect(card.journey.entry_station).to eq entry_station
+      expect(card.journey_log.journeys.last.entry_station).to eq entry_station
     end
   end
 
@@ -85,8 +85,8 @@ describe "User Story:" do
     it "I want to see to all my previous trips" do
       card.touch_in(entry_station)
       card.touch_out(exit_station)
-      expect(card.journeys.last.entry_station).to eq entry_station
-      expect(card.journeys.last.exit_station).to eq exit_station
+      expect(card.journey_log.journeys.last.entry_station).to eq entry_station
+      expect(card.journey_log.journeys.last.exit_station).to eq exit_station
     end
   end
 

@@ -10,7 +10,14 @@ class JourneyLog
   end
 
   def finish(exit_station)
-    current_journey.finish(exit_station)
+    if @journeys.empty?
+      @journeys << current_journey.finish(exit_station)
+    elsif @journeys.last.complete?
+      @journeys << current_journey.finish(exit_station)
+    else
+      @journeys.last.finish(exit_station)
+    end
+
     @current_journey = nil
   end
 

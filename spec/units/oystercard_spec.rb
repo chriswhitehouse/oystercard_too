@@ -30,10 +30,14 @@ describe Oystercard do
     it { is_expected.to respond_to(:in_journey?) }
 
     it "should be false before touch in" do
+      allow(journey_double).to receive(:complete?).and_return(true)
       expect(card).not_to be_in_journey
     end
 
     it "should be true after touch in" do
+      allow(journey_double).to receive(:complete?).and_return(false)
+      stub_const("Journey::MINIMUM_CHARGE", 1)
+      allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       card.touch_in(entry_station_double)
       expect(card).to be_in_journey
     end
@@ -45,7 +49,11 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_in).with(1).argument }
 
     it "should change in_journey from false to true" do
-      expect { card.touch_in(entry_station_double) }.to change { card.in_journey? }.from(false).to(true)
+      allow(journey_double).to receive(:complete?).and_return(false)
+      stub_const("Journey::MINIMUM_CHARGE", 1)
+      allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
+      card.touch_in(entry_station_double)
+      expect(card.in_journey?).to eq (true)
     end
 
     it "should raise an error if balance is less than minimum fare" do
@@ -54,11 +62,15 @@ describe Oystercard do
     end
 
     it "should record the entry station" do
+      allow(journey_double).to receive(:complete?).and_return(false)
+      stub_const("Journey::MINIMUM_CHARGE", 1)
+      allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       card.touch_in(entry_station_double)
-      expect(card.journey.entry_station).to eq entry_station_double
+      expect(card.journey_log.journeys.last.entry_station).to eq entry_station_double
     end
 
     it "should deduct a penalty charge if no prior exit station" do
+      allow(journey_double).to receive(:complete?).and_return(false)
       stub_const("Journey::PENALTY_CHARGE", 6)
       allow(journey_double).to receive(:fare).and_return(Journey::PENALTY_CHARGE)
       card.touch_in(entry_station_double)
@@ -72,12 +84,15 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_out).with(1).argument }
 
     it "should change in_journey from true to false" do
+      allow(journey_double).to receive(:complete?).and_return(true)
       allow(journey_double).to receive(:fare).and_return(1)
       card.touch_in(entry_station_double)
-      expect { card.touch_out(exit_station_double) }.to change { card.in_journey? }.from(true).to(false)
+      card.touch_out(exit_station_double)
+      expect(card.in_journey?).to eq false
     end
 
     it "reduce balance by fare amount" do
+      allow(journey_double).to receive(:complete?).and_return(false)
       stub_const("Journey::MINIMUM_CHARGE", 1)
       allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       card.touch_in(entry_station_double)
@@ -89,7 +104,7 @@ describe Oystercard do
       allow(journey_double).to receive(:entry_station).and_return(nil)
       card.touch_out(exit_station_double)
       card.touch_out(exit_station_double)
-      expect(card.journeys.last.entry_station).to eq nil
+      expect(card.journey_log.journeys.last.entry_station).to eq nil
     end
 
     it "deducts a penalty charge if no prior entry station" do
@@ -99,21 +114,18 @@ describe Oystercard do
     end
   end
 
-  describe "#journeys" do
+  describe "#journey_log" do
     include_context "Card Topped Up"
 
-    it { is_expected.to respond_to(:journeys) }
-
-    it "should be empty by default" do
-      expect(card.journeys).to be_empty
-    end
+    it { is_expected.to respond_to(:journey_log) }
 
     it "should record a collection of entry and exit station pairs" do
+      allow(journey_double).to receive(:complete?).and_return(false)
       stub_const("Journey::MINIMUM_CHARGE", 1)
       allow(journey_double).to receive(:fare).and_return(Journey::MINIMUM_CHARGE)
       card.touch_in(entry_station_double)
       card.touch_out(exit_station_double)
-      expect(card.journeys).to include journey_double
+      expect(card.journey_log.journeys).to include journey_double
     end
   end
 end
