@@ -12,7 +12,12 @@ describe JourneyLog do
 
   describe "#start" do
     it "should start a new journey with an entry station" do
-      expect(journey_log.start(entry_station_double)).to eq journey_double
+      expect(journey_log.start(entry_station_double)).to include journey_double
+    end
+
+    it "should record a journey" do
+      journey_log.start(entry_station_double)
+      expect(journey_log.journeys).to include journey_double
     end
   end
 
@@ -28,7 +33,7 @@ describe JourneyLog do
       journey_log.start(entry_station_double)
       journey_log.finish(exit_station_double)
       p journey_log.journeys
-      expect(journey_log.journeys).to eq "#{journey_double}"
+      expect(journey_log.journeys).to include journey_double
     end
   end
 
